@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:camel="http://camel.apache.org/schema/spring"
+  xsi:schemaLocation="
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <bean id="bean-prop" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    <property name="properties">
+      <props>
+        <prop key="jco.client.ashost">192.168.0.100</prop>
+        <prop key="jco.client.sysnr">00</prop>
+        <prop key="jco.client.client">600</prop>
+        <prop key="jco.client.user">user</prop>
+        <prop key="jco.client.passwd">secret</prop>
+        <prop key="jco.client.lang">en</prop>
+        <prop key="jco.destination.pool_capacity">3</prop>
+        <prop key="jco.destination.peak_limit">10</prop>
+      </props>
+    </property>
+  </bean>
+
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring" id="jkniv-sample">
+
+    <camel:route id="hello-sap-world-bean">
+      <camel:description>Sample to get data from SAP using connection properties as spring bean</camel:description>
+      <from uri="servlet:///hello-sap-world-bean" />
+      <log message="Request to SAP world ${headers}" loggingLevel="INFO" />
+      <to
+        uri="jkniv-jco:bean-prop?sapFunction=ZARQ_BUSCA_VEICULOS&amp;sapDestName=VEIC_ABAP_AS_WITH_POOL&amp;sapJcoTable=T_DADOS" />
+      <to uri="mock:result" />
+    </camel:route>
+
+    <route>
+      <!-- incoming requests from the servlet is routed -->
+      <from uri="servlet:///hello" />
+      <transform>
+        <constant>Hello camel. Camel and servlet are working perfectly</constant>
+      </transform>
+    </route>
+    
+    <!--  SAMPLE USING JNDI, needs config web container! -->
+    <!-- 
+    <camel:route id="hello-sap-world-jndi">
+      <camel:description>Sample to get data from SAP using connection properties with jndi</camel:description>
+      <from uri="servlet:///hello-sap-world-jndi" />
+      <log message="Request to SAP world ${headers}" loggingLevel="INFO" />
+      <to
+        uri="jkniv-jco:sap-conn?sapFunction=ZARQ_BUSCA_VEICULOS&amp;sapDestName=VEIC_ABAP_AS_WITH_POOL&amp;sapJcoTable=T_DADOS" />
+      <to uri="mock:result" />
+    </camel:route>
+    
+    
+     -->
+  </camelContext>
+</beans>

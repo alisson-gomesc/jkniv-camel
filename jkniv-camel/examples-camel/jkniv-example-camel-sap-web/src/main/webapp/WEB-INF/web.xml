@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0">
+  <display-name>jkniv-sap-web</display-name>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:camel-config.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>CamelServlet</servlet-name>
+    <servlet-class>org.apache.camel.component.servlet.CamelHttpTransportServlet</servlet-class>
+    <init-param>
+      <param-name>ignoreDuplicateServletName</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>async</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>CamelServlet</servlet-name>
+    <url-pattern>/camel/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>

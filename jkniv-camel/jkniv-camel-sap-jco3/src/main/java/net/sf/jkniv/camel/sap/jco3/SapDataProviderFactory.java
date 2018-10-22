@@ -37,7 +37,7 @@ public class SapDataProviderFactory
         }
         catch (Exception e)
         {
-            LOG.error("Cannot invoke "+SHARED_DATA_PROVIDER+".getInstance()", e);
+            LOG.warn("Cannot invoke "+SHARED_DATA_PROVIDER+".getInstance() [{}]", e.getMessage());
         }
     }
 }

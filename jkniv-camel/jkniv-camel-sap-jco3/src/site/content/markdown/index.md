@@ -12,13 +12,16 @@ Maven users will need to add the following dependency to their pom.xml for this 
     <dependency>
       <groupId>net.sf.jkniv</groupId>
       <artifactId>jkniv-camel-sap-jco3</artifactId>
-      <version>2.18.0.RC1</version>
+      <version>2.19.0</version>
     </dependency>
 
 
 #### NEWS
 
 Short release notes.
+
+##### version 2.19.0 released
+ Release that supports JCoStructure as PARAMETERS INPUT.
 
 ##### version 2.18.0.RC1 released
  Release that supports several web applications using `jkniv-jco` in the same web container.
@@ -50,7 +53,8 @@ Options
 | ------------ | -------|---------|-------------|
 | sapFunction  | String |         |  JCo function name |
 | sapDestName  | String |         | Set the name of SAP JCoDestination name that identifies a physical destination of a function call |
-| sapJcoTable  | String |         | The name of SAP JCoTable that encapsulates a database table |
+| sapJcoTable  | String |         | The name of SAP JCoTable that encapsulates a output data table |
+| sapJcoTableIn| String |         | The name of SAP JCoTable that encapsulates a input table parameters (*since 2.19.0 version*)|
 | prefixParams | String | SAPJco_ | The prefix name of parameters,  default is `SAPJco_`, the prefix value is used when the parameters came from header message.|
 | parserResultStrategy  | String |  | Allows to plugin to use a custom `net.sf.jkniv.camel.sap.jco3.ParserResult` that extract the returned values from SAP JCo function |
 | useHeaderAsParam | boolean | false | indicate to lookup the parameters from JCo at header message, default is the body message. When your value is `true` the option `prefixParams` is mandatory, cannot be empty or null. |

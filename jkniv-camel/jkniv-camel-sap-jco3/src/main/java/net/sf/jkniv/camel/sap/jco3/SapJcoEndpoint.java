@@ -48,7 +48,10 @@ public class SapJcoEndpoint extends DefaultEndpoint
     
     @UriParam(defaultValue = "")
     private String     sapJcoTable          = "";
-    
+
+    @UriParam(defaultValue = "")
+    private String     sapJcoTableIn          = "";
+
     @UriParam(defaultValue = "SAPJco_")
     private String     prefixParams         = "SAPJco_";
     
@@ -171,6 +174,26 @@ public class SapJcoEndpoint extends DefaultEndpoint
     }
     
     /**
+     * The name of SAP <code>JCoTable</code> that encapsulates a input of table parameters 
+     * @return the name of SAP <code>JCoTable</code> .
+     * @see com.sap.conn.jco.JCoTable
+     */
+    public String getSapJcoTableIn()
+    {
+        return sapJcoTableIn;
+    }
+    
+    
+    /**
+     * The name of SAP <code>JCoTable</code> 
+     * @param sapJcoTableIn name of SAP <code>JCoTable</code> 
+     */
+    public void setSapJcoTableIn(String sapJcoTableIn)
+    {
+        this.sapJcoTableIn = sapJcoTableIn;
+    }
+    
+    /**
      * The prefix name of parameters. Default is <code>SAPJco_</code>
      * @return prefix name of JCo parameters
      */
@@ -200,7 +223,7 @@ public class SapJcoEndpoint extends DefaultEndpoint
     
     /**
      * Define if JCo parameters are in header message.
-     * @param useHeaderAsParam 
+     * @param useHeaderAsParam parameters from JCo come from header message
      */
     public void setUseHeaderAsParam(boolean useHeaderAsParam)
     {
@@ -248,7 +271,7 @@ public class SapJcoEndpoint extends DefaultEndpoint
     /**
      * Define the class name that implements {@code ParserResult}
      * @param parserResultStrategy class name to parse result 
-     * @throws RuntimeException
+     * @throws RuntimeCamelException when {@code net.sf.jkniv.camel.sap.jco3.ParserResult} implementation cannot be found
      */
     public void setParserResultStrategy(String parserResultStrategy)
     {

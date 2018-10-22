@@ -58,7 +58,7 @@ class JndiResources
         }
         catch (NamingException e)
         {
-            LOG.info("Cannot localize the jndi name [" + value + "]: " + e.getMessage());
+            LOG.info("Can not found the jndi name [" + value + "]: " + e.getMessage());
         }
         return o;
     }

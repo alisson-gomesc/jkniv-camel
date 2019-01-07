@@ -54,10 +54,11 @@ import com.sap.conn.jco.JCoTable;
  */
 public class SapJcoProducer extends DefaultProducer
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SapJcoProducer.class);
-    private SapJcoEndpoint      endpoint;
+    private static final Logger        LOG             = LoggerFactory.getLogger(SapJcoProducer.class);
+    private SapJcoEndpoint             endpoint;
     private static final Set<Class<?>> SUPPORTED_TYPES = new HashSet<Class<?>>();
-    static {
+    static
+    {
         SUPPORTED_TYPES.add(String.class);
         SUPPORTED_TYPES.add(boolean.class);
         SUPPORTED_TYPES.add(char.class);
@@ -152,27 +153,32 @@ public class SapJcoProducer extends DefaultProducer
                     function.getImportParameterList().setValue(f.getName(), value);
                     if (LOG.isDebugEnabled())
                         LOG.debug("setting param=[{}] value=[{}], typeof=[{}], prefix=[{}]", f.getName(), value,
-                            (value != null ? value.getClass().getName() : "null"), endpoint.getPrefixParams());
+                                (value != null ? value.getClass().getName() : "null"), endpoint.getPrefixParams());
                 }
                 else
-                    LOG.info("Type [{}] not is supported as parameter try a type of {}", value.getClass(), SUPPORTED_TYPES);
+                    LOG.info("Type [{}] not is supported as parameter try a type of {}", value.getClass(),
+                            SUPPORTED_TYPES);
             }
         }
-        JCoTable codes = function.getTableParameterList().getTable(endpoint.getSapJcoTableIn());
-        if (codes != null)
+        if (endpoint.getSapJcoTableIn() != null && !endpoint.getSapJcoTableIn().equals(""))
         {
-            //LOG.debug("{}", codes);
-            Object tableIn = getParams(exchange).get(endpoint.getSapJcoTableIn());
-            if (tableIn instanceof List)
+            JCoTable codes = function.getTableParameterList().getTable(endpoint.getSapJcoTableIn());
+            if (codes != null)
             {
-                List<Map<String, Object>> list = (List<Map<String, Object>>) tableIn;
-                setTableParameter(codes, list);
+                //LOG.debug("{}", codes);
+                Object tableIn = getParams(exchange).get(endpoint.getSapJcoTableIn());
+                if (tableIn instanceof List)
+                {
+                    List<Map<String, Object>> list = (List<Map<String, Object>>) tableIn;
+                    setTableParameter(codes, list);
+                }
+                else if (tableIn != null)
+                {
+                    LOG.warn("The parameter sapJcoTableIn must be instance of List of Map, type [{}] isn't supported",
+                            tableIn.getClass());
+                }
             }
-            else if(tableIn != null)
-            {
-                LOG.warn("The parameter sapJcoTableIn must be instance of List of Map, type [{}] isn't supported", tableIn.getClass());
-            }
-        }        
+        }
     }
     
     /**
@@ -189,7 +195,7 @@ public class SapJcoProducer extends DefaultProducer
             Entry field = (Map.Entry) fieldIter.next();
             String k = field.getKey().toString();
             Object v = field.getValue();
-            if(isSupportedType(v))
+            if (isSupportedType(v))
             {
                 structure.setValue(k, v);
                 if (LOG.isDebugEnabled())
@@ -219,8 +225,8 @@ public class SapJcoProducer extends DefaultProducer
                 table.setValue(entry.getKey(), entry.getValue());
                 if (LOG.isDebugEnabled())
                     LOG.debug("setting param=[{}] value=[{}], typeof=[{}]", entry.getKey(), entry.getValue(),
-                        (entry.getValue() != null ? entry.getValue().getClass().getName() : "null"));
-
+                            (entry.getValue() != null ? entry.getValue().getClass().getName() : "null"));
+                
             }
         }
     }
@@ -312,11 +318,11 @@ public class SapJcoProducer extends DefaultProducer
         }
         return params;
     }
-
+    
     private boolean isSupportedType(Object value)
     {
         boolean supported = true;
-        if(value != null)
+        if (value != null)
         {
             supported = SUPPORTED_TYPES.contains(value.getClass());
         }

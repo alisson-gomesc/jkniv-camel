@@ -167,3 +167,113 @@ To lookup the parameters from message header the option `useHeaderAsParam` must 
     </camel:route>
     
     
+    
+#### Example using sapJcoTableIn data
+
+RFC data structure:
+
+    Tables:
+    +-------------+-------+
+    | PARAMETERS 'TABLES' |
+    +-------------+-------+
+    |TBL_FAT_ITENS|TBL_MSG|
+    +-------------+-------+
+        
+    [ZFIT_FAT_HEADER
+    MANDT                           ,MANDT                           ,C,3,0,3,0,6,0,0,Principal
+    MONAT                           ,MONAT                           ,N,2,3,2,3,4,6,0,Ref. month
+    GJAHR                           ,GJAHR                           ,N,4,5,4,5,8,10,0,Reference
+    DTSTAR                          ,                                ,D,8,9,8,9,16,18,0,Start date
+    DTEND                           ,                                ,D,8,17,8,17,16,34,0,End date
+    TOTREC                          ,                                ,P,2,25,4,25,4,50,0,total of records
+    DAYS_OFF                        ,                                ,P,2,27,4,29,4,54,0,Days off
+    TOT_DICOUNT                     ,                                ,P,4,29,8,33,8,58,2,Total discount
+    Record length: 41,66
+    ]
+    
+    ------------------------------------------------------------------------------------
+    |---|--|----|--------|--------|--------|--------|----------------|
+    | STRUCTURE 'ZFIT_FAT_HEADER'
+    |---|--|----|--------|--------|--------|--------|----------------|
+    |MAN|MO|GJAH|DTSTAR  |DTEND   |TOTREC  |DAYS_OFF|TOT_DICOUNT     |
+    |---|--|----|--------|--------|--------|--------|----------------|
+    |012|34|5678|90123456|78901234|   5   6|   7   8|   9   0   1   2|
+    |---|--|----|--------|--------|--------|--------|----------------|
+    |   |00|0000|00000000|00000000|0000000C|0000000C|000000000000000C|
+    |---|--|----|--------|--------|--------|--------|----------------|
+    
+    | TABLE 'ZFIT_FAT_SERVICE'
+    +---+-------+----+------+------+------+------+--------+--------+--------+------------+------+
+    |MAN|KUNNR  |GJAH|DTSTAR|DTEND |PLATE |SERIAL|SERVICE |DAYS_OFF|DEFLATOR|TOT_DICOUNT |TOTAL |
+    +---+-------+----+------+------+------+------+--------+--------+--------+------------+------+
+
+The parameter `sapJcoTableIn` is a `java.util.Map` input.
+
+    /**
+     * Generate input data for SAP RFC finance
+     */
+    public class BillingProcessor implements Processor
+    {    
+        public BillingProcessor()
+        {
+        }
+        
+        /**
+         * Build input SAP RFC Finance from BillingReport data
+         */
+        @Override
+        public void process(Exchange exchange)
+        {
+            BillingReport data = exchange.getIn().getBody(BillingReport.class);
+            List<BillingReportRow> details = data.getDetails();
+            Map<String, Object> iFatHeader = toIFatHeader(data, details);        
+            List<Map<String, Object>> tblFatItens = new ArrayList<>();
+            for (BillingReportRow item : details)
+            {
+                Map<String, Object> tblFatItem = toTblFatItem(item);
+                tblFatItens.add(tblFatItem);            
+            }
+            iFatHeader.put("TBL_FAT_ITENS", tblFatItens);
+            
+            exchange.getIn().setBody(iFatHeader);
+        }
+        
+        private Map<String, Object> toIFatHeader(BillingReport data, List<BillingReportRow> details)
+        {
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            Map<String, Object> iFatHeader = new HashMap<>();
+            iFatHeader.put("DTSTAR", sdf.format(data.getStart()));
+            iFatHeader.put("DTEND", sdf.format(data.getEnd()));
+            iFatHeader.put("TOTREC", details != null ? details.size() : 0);
+            iFatHeader.put("DAYS_OFF", data.getQtdUnTransmissionDays());
+            iFatHeader.put("TOT_DICOUNT", data.getDeflatorTotal());
+            return iFatHeader;
+        }
+        
+        private Map<String, Object> toTblFatItem(BillingReportRow item)
+        {
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            Map<String, Object> tblFatItem = new HashMap<>();
+            tblFatItem.put("DTSTAR", sdf.format(item.getStartBillingDate()));
+            tblFatItem.put("DTEND", sdf.format(item.getEndBillingDate()));
+            tblFatItem.put("PLATE", item.getPlate());
+            tblFatItem.put("SERIAL", item.getSerial());
+            tblFatItem.put("SERVICE", item.getServices());
+            tblFatItem.put("DAYS_OFF", item.getQtdUnTransmissionDays());
+            tblFatItem.put("DEFLATOR", item.getDeflator());
+            tblFatItem.put("TOT_DICOUNT", item.getDeflatorTotal());
+            tblFatItem.put("TOTAL", item.getTransmissionDays());
+            return tblFatItem;
+        }
+    }
+    
+Camel route to send data for SAP RFC.
+
+    <camel:route id="billing-send">
+      <camel:description>Billing process</camel:description>
+      <from uri="direct:billing-send" />
+        <camel:process ref="billingProcessor" />
+        <log message="Sending data to SAP" loggingLevel="DEBUG" logName="billing" />
+        <to uri="jkniv-jco:sap-conn?sapFunction=ZRFC_FINANCE&amp;sapDestName=AS_WITH_POOL&amp;sapJcoTable=TBL_MSG&amp;sapJcoTableIn=TBL_FAT_ITENS" />
+        <log message="Save BILLING-RESPONSE in MQ to send database: ${body}" loggingLevel="DEBUG" logName="billing" />      
+    </camel:route>

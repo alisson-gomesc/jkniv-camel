@@ -5,7 +5,7 @@ Jco Component
 
 The **jkniv-jco:** component allows you to work with Sap Jco3 library.
 
-This component uses the sap JCo product version 3.x from SAP AG to handling sap connection.
+This component uses the sap JCo product version 3.x from SAP AG to handler the sap connection.
 
 Maven users will need to add the following dependency to their pom.xml for this component:
 
@@ -24,10 +24,10 @@ Short release notes.
  Release that supports JCoStructure as PARAMETERS INPUT.
 
 ##### version 2.18.0.RC1 released
- Release that supports several web applications using `jkniv-jco` in the same web container.
+ Release that supports several web applications using `jkniv-sap-provider` in the same web container.
 
 ##### version 2.17.4 released
- There are a bug in version 2.17.3, it doesn't preserver the header message, this was fixed in version 2.17.4.
+ There is a bug in version 2.17.3, it doesn't preserver the header message, this was fix in version 2.17.4.
 
 Prerequisites
 --------------------
@@ -38,7 +38,7 @@ Prerequisites
 URI format
 --------------------
 
-From 2.17.3 could only act as a producer endpoint (e.g. `to()`).
+Could only act as a producer endpoint (e.g. `to(...)`).
 
 The `jkniv-jco` component uses the following endpoint URI notation:
 
@@ -89,7 +89,7 @@ Read the manual [Components of SAP Communication Technology](https://help.sap.co
 Camel+Spring Configuration
 --------------------
 
-This is a snippet code, from Spring bean, configuring the properties values to connect at SAP Server:
+This is a snippet code, from Spring bean, configuring the properties values to connect to SAP Server:
 
     <?xml version="1.0" encoding="UTF-8"?>
     <beans xmlns="http://www.springframework.org/schema/beans"...

@@ -37,7 +37,6 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
  */
 public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
 {
-    
     private static final Logger                  LOG        = LoggerFactory.getLogger(SapJcoComponent.class);
     private static final DestinationDataProvider myProvider = SapDataProviderFactory.getInstance();
     

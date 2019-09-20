@@ -58,7 +58,7 @@ public class SapJcoEndpoint extends DefaultEndpoint
     @UriParam(defaultValue = "net.sf.jkniv.camel.sap.jco3.MapParserResult")
     private String     parserResultStrategy = "net.sf.jkniv.camel.sap.jco3.MapParserResult";
     
-    @UriParam(defaultValue = "false", description="The parameters stay at header from Message, default is false")
+    @UriParam(defaultValue = "false", description="The parameters are in header from Message, default is false")
     private boolean    useHeaderAsParam     = false;
 
     @UriParam(defaultValue = "false", description="Result can be contains null values, default is false")

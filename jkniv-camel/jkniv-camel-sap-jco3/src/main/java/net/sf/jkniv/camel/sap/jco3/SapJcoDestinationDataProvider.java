@@ -67,7 +67,6 @@ class SapJcoDestinationDataProvider implements DestinationDataProvider
         {
             //read the destination from DB
             Properties p = propsByDestName.get(destName);
-            
             if (p != null)
             {
                 //check if all is correct, for example

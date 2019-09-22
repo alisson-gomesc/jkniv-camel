@@ -16,46 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.jkniv.camel.sap;
+package net.sf.jkniv.camel.sap.jco3;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
-import org.junit.Test;
-
-//import org.junit.Test;
-
-public class SapJcoComponentTest
+class WarName
 {
-
-    /*
-    @Test
-    public void testSsap() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(1);       
-        
-        assertMockEndpointsSatisfied();
-    }
-
-    @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
-            public void configure() {
-                from("jkniv-jco://foo")
-                  .to("jkniv-jco://bar")
-                  .to("mock:result");
-            }
-        };
-    }
-    */
-    
-    @Test 
-    public void whenDiscoverJarName() throws URISyntaxException
-    {
-        System.out.println(getWarName());
-    }
-    
-    private String getWarName()  throws URISyntaxException 
+    public static String getName()  throws URISyntaxException 
     {
         String path = getDirUri();
         String[] pathSplitted = path.split("\\\\");
@@ -71,8 +39,8 @@ public class SapJcoComponentTest
         return pathSplitted[i-1]; 
     }
     
-    private String getDirUri()  throws URISyntaxException {
-        return new File(SapJcoComponentTest.class.getProtectionDomain().getCodeSource().getLocation()
+    private static String getDirUri()  throws URISyntaxException {
+        return new File(WarName.class.getProtectionDomain().getCodeSource().getLocation()
                 .toURI()).getPath();
     }
 

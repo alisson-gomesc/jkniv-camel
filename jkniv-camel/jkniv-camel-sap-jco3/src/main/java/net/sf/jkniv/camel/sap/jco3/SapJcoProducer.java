@@ -186,7 +186,7 @@ public class SapJcoProducer extends DefaultProducer
      * @param f field name of parameter
      * @param map the value of the parameter
      */
-    public void setStructureParameter(JCoField f, Map<String, Object> map)
+    private void setStructureParameter(JCoField f, Map<String, Object> map)
     {
         Iterator fieldIter = map.entrySet().iterator();
         JCoStructure structure = f.getStructure();

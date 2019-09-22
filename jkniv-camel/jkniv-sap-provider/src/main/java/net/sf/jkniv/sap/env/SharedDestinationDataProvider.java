@@ -40,14 +40,14 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
  */
 public class SharedDestinationDataProvider implements DestinationDataProvider
 {
-    private static final Logger          LOG             = java.util.logging.Logger
-            .getLogger("SharedDestinationDataProvider");
-    private DestinationDataEventListener eL;
-    private HashMap<String, Properties>  propsByDestName = new HashMap<String, Properties>();
+    private static final Logger            LOG = Logger.getLogger("SharedDestinationDataProvider");
     private static DestinationDataProvider instance;
+    private DestinationDataEventListener   eL;
+    private HashMap<String, Properties>    propsByDestName;
     
     public SharedDestinationDataProvider()
     {
+        this.propsByDestName = new HashMap<String, Properties>();
     }
     
     public static DestinationDataProvider getInstance()
@@ -136,5 +136,4 @@ public class SharedDestinationDataProvider implements DestinationDataProvider
             }
         }
     }
-    
 }

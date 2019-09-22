@@ -39,17 +39,20 @@ public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
 {
     private static final Logger                  LOG        = LoggerFactory.getLogger(SapJcoComponent.class);
     private static final DestinationDataProvider myProvider = SapDataProviderFactory.getInstance();
+    private static Invoke                        INVOKE;
     
     public SapJcoComponent()
     {
         super();
-        //super(SapJcoEndpoint.class);
+        if (INVOKE != null)
+            INVOKE = new Invoke(myProvider.getClass(), "changeProperties", new Class[]
+            { String.class, Properties.class });
+        
         LOG.info("SapJcoDestinationDataProvider instance hashCode: " + myProvider.hashCode());
     }
     
     public SapJcoComponent(CamelContext context)
     {
-        //super(context, SapJcoEndpoint.class);
         super(context);
     }
     
@@ -59,9 +62,23 @@ public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
         Properties prop = lookup(remaining);
         setProperties(endpoint, parameters);
         endpoint.setPropSapConnection(prop);
-        register();
-        setProperty(endpoint.getSapDestName(),prop);
+        SapJcoRegistry.register(myProvider, WarName.getName());
+        setProperty(endpoint.getSapDestName(), prop);
         return endpoint;
+    }
+    
+    @Override
+    protected void doShutdown() throws Exception
+    {
+        SapJcoRegistry.undoRegister(myProvider, WarName.getName());
+        super.doShutdown();
+    }
+    
+    @Override
+    protected void doStop() throws Exception
+    {
+        SapJcoRegistry.undoRegister(myProvider, WarName.getName());
+        super.doStop();
     }
     
     private Properties lookup(String remaining)
@@ -84,61 +101,6 @@ public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
         return prop;
     }
     
-    @Override
-    protected void doShutdown() throws Exception
-    {
-        unregistryDataProvider();
-        super.doShutdown();
-    }
-    
-    @Override
-    protected void doStop() throws Exception
-    {
-        unregistryDataProvider();
-        super.doStop();
-    }
-    
-    private void unregistryDataProvider()
-    {
-        try
-        {
-            if (com.sap.conn.jco.ext.Environment.isDestinationDataProviderRegistered())
-            {
-                com.sap.conn.jco.ext.Environment.unregisterDestinationDataProvider(myProvider);
-                LOG.info("Destination Data Provider was unregistered [{}] successfully.", myProvider);
-            }
-        }
-        catch (IllegalStateException providerAlreadyRegisteredException)
-        {
-            LOG.error("Cannot deregister the DestinationDataProvider", providerAlreadyRegisteredException);
-            //somebody else registered its implementation, 
-            //stop the execution
-        }
-    }
-    
-    static void register()
-    {
-        //register the provider with the JCo environment;
-        //catch IllegalStateException if an instance is already registered
-        try
-        {
-            if (!com.sap.conn.jco.ext.Environment.isDestinationDataProviderRegistered())
-            {
-                com.sap.conn.jco.ext.Environment.registerDestinationDataProvider(myProvider);
-                LOG.info("Destination Data Provider was register [{}] successfully.", myProvider);
-            }
-            else
-                LOG.debug("Jco Destination global Environment data provider alright registered");
-        }
-        catch (IllegalStateException providerAlreadyRegisteredException)
-        {
-            //somebody else registered its implementation, 
-            //stop the execution
-            throw new Error(providerAlreadyRegisteredException);
-        }
-        //set properties for the destination and ...
-    }
-    
     static void setProperty(String destName, Properties props)
     {
         if (myProvider instanceof SapJcoDestinationDataProvider)
@@ -146,10 +108,13 @@ public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
         else if (myProvider != null
                 && SapDataProviderFactory.SHARED_DATA_PROVIDER.equals(myProvider.getClass().getName()))
         {
-            invoke("changeProperties", new Class[]{String.class, Properties.class}, new Object[]{destName, props});
+            INVOKE.invoke(myProvider, new Object[]
+            { destName, props });
+            //invoke("changeProperties", new Class[]{String.class, Properties.class}, new Object[]{destName, props});
         }
     }
-
+    
+    /*
     private static void invoke(String methodName, Class<?>[] classes, Object[] params)
     {
         try
@@ -159,8 +124,8 @@ public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
         }
         catch (Exception e)
         {
-            LOG.error("Cannot invoke "+methodName+"(...)", e);
+            LOG.error("Cannot invoke " + methodName + "(...)", e);
         }
     }
-    
+    */
 }

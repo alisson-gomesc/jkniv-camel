@@ -18,7 +18,6 @@
  */
 package net.sf.jkniv.camel.sap.jco3;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
 
@@ -30,30 +29,23 @@ import org.apache.camel.util.CamelContextHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sap.conn.jco.ext.DestinationDataProvider;
-
 /**
  * Represents the component that manages {@link SapJcoEndpoint}.
  */
-public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
+public class SapJcoComponent extends DefaultComponent
 {
     private static final Logger                  LOG        = LoggerFactory.getLogger(SapJcoComponent.class);
-    private static final DestinationDataProvider myProvider = SapDataProviderFactory.getInstance();
-    private static Invoke                        INVOKE;
     
     public SapJcoComponent()
     {
         super();
-        if (INVOKE != null)
-            INVOKE = new Invoke(myProvider.getClass(), "changeProperties", new Class[]
-            { String.class, Properties.class });
-        
-        LOG.info("SapJcoDestinationDataProvider instance hashCode: " + myProvider.hashCode());
+        LOG.trace("SapJcoComponent instanced successfully");
     }
     
     public SapJcoComponent(CamelContext context)
     {
         super(context);
+        LOG.trace("SapJcoComponent instanced successfully");
     }
     
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception
@@ -62,22 +54,23 @@ public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
         Properties prop = lookup(remaining);
         setProperties(endpoint, parameters);
         endpoint.setPropSapConnection(prop);
-        SapJcoRegistry.register(myProvider, WarName.getName());
-        setProperty(endpoint.getSapDestName(), prop);
+        SapJcoRegistry.register();
+        SapJcoRegistry.setProperty(endpoint.getSapDestName(), prop);
+        LOG.trace("SapJcoComponent create Endpoint successfully");
         return endpoint;
     }
     
     @Override
     protected void doShutdown() throws Exception
     {
-        SapJcoRegistry.undoRegister(myProvider, WarName.getName());
+        SapJcoRegistry.unregister();
         super.doShutdown();
     }
     
     @Override
     protected void doStop() throws Exception
     {
-        SapJcoRegistry.undoRegister(myProvider, WarName.getName());
+        SapJcoRegistry.unregister();
         super.doStop();
     }
     
@@ -101,18 +94,19 @@ public class SapJcoComponent extends DefaultComponent //UriEndpointComponent
         return prop;
     }
     
+    /*
     static void setProperty(String destName, Properties props)
     {
-        if (myProvider instanceof SapJcoDestinationDataProvider)
-            ((SapJcoDestinationDataProvider) myProvider).changeProperties(destName, props);
-        else if (myProvider != null
-                && SapDataProviderFactory.SHARED_DATA_PROVIDER.equals(myProvider.getClass().getName()))
+        if (MY_PROVIDER instanceof SapJcoDestinationDataProvider)
+            ((SapJcoDestinationDataProvider) MY_PROVIDER).changeProperties(destName, props);
+        else if (MY_PROVIDER != null
+                && SapDataProviderFactory.SHARED_DATA_PROVIDER.equals(MY_PROVIDER.getClass().getName()))
         {
-            INVOKE.invoke(myProvider, new Object[]
-            { destName, props });
+            CHANGE_PROPERTIES.invoke(MY_PROVIDER, new Object[] { destName, props });
             //invoke("changeProperties", new Class[]{String.class, Properties.class}, new Object[]{destName, props});
         }
     }
+    */
     
     /*
     private static void invoke(String methodName, Class<?>[] classes, Object[] params)

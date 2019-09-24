@@ -21,9 +21,16 @@ package net.sf.jkniv.camel.sap.jco3;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import org.mockito.internal.stubbing.answers.Returns;
+
+/**
+ * 
+ * @author Alisson Gomes
+ * @since 2.20.0
+ */
 class WarName
 {
-    public static String getName()  throws URISyntaxException 
+    public static String getName() 
     {
         String path = getDirUri();
         String[] pathSplitted = path.split("\\\\");
@@ -39,9 +46,15 @@ class WarName
         return pathSplitted[i-1]; 
     }
     
-    private static String getDirUri()  throws URISyntaxException {
-        return new File(WarName.class.getProtectionDomain().getCodeSource().getLocation()
-                .toURI()).getPath();
+    private static String getDirUri() {
+        final String UNKNOW = "UNKNOW";
+        try
+        {
+            return new File(WarName.class.getProtectionDomain().getCodeSource().getLocation()
+                    .toURI()).getPath();
+        }
+        catch (URISyntaxException ignoreUnknowAppName) {}
+        return UNKNOW;
     }
 
 }

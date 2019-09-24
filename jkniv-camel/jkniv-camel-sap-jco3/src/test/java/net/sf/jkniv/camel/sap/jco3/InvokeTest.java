@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -46,9 +47,9 @@ public class InvokeTest
     @Test
     public void whenInvokeWithoutParams()
     {
-        Invoke invoke = new Invoke(SapJcoDestinationDataProvider.class, "supportsEvents", null);
+        Invoke SUPPORTS_EVENTS = new Invoke(SapJcoDestinationDataProvider.class, "supportsEvents", null);
         SapJcoDestinationDataProvider provider = new SapJcoDestinationDataProvider();
-        Object answer = invoke.invoke(provider, null);
+        Object answer = SUPPORTS_EVENTS.invoke(provider, null);
         assertThat(answer, instanceOf(boolean.class));
         assertThat((boolean)answer, is(true));
     }
@@ -56,10 +57,33 @@ public class InvokeTest
     @Test
     public void whenInvokeWithParams()
     {
-        Invoke invoke = new Invoke(String.class, "indexOf", new Class[]{String.class});
+        Invoke INDEX_OF = new Invoke(String.class, "indexOf", new Class[]{String.class});
         String abcdef = "abcdef";
-        Object answer = invoke.invoke(abcdef, new Object[]{"c"});
+        Object answer = INDEX_OF.invoke(abcdef, new Object[]{"c"});
         assertThat(answer, instanceOf(Integer.class));
         assertThat((int)answer, is(2));
+    }
+
+    @Test @Ignore
+    public void whenInvokeStaticMethodsVarArgs()
+    {
+        final Invoke FORMAT = new Invoke(String.class, "format", new Class[]{String.class, Object[].class});
+        String hello = "hi %s";
+        
+        assertThat(String.format(hello, new String[]{"Alisson"}), is("hi Alisson"));
+        Object answer = FORMAT.invoke(hello, new String[]{"Alisson"});
+        assertThat(answer, instanceOf(String.class));
+        assertThat(answer.toString(), is("Hi Alisson"));
+    }
+
+    @Test
+    public void whenInvokeStaticMethodOneArg()
+    {
+        final Invoke VALUE_OF = new Invoke(Integer.class, "valueOf", new Class[]{String.class});
+        
+        assertThat(Integer.valueOf("1"), is(1));
+        Object answer = VALUE_OF.invoke(new String[]{"1"});
+        assertThat(answer, instanceOf(Integer.class));
+        assertThat((int)answer, is(1));
     }
 }

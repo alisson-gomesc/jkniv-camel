@@ -68,7 +68,35 @@ public class SharedSapJcoRegistryTest
         DestinationDataProvider provider =  SharedDestinationDataProvider.getInstance();
         SharedSapJcoRegistry.register(provider, "test");
         assertThat(SharedSapJcoRegistry.hasRegister("test"), is(true));
-        SharedSapJcoRegistry.undoRegister(provider, "test");
+        SharedSapJcoRegistry.unregister(provider, "test");
         assertThat(SharedSapJcoRegistry.hasRegister("test"), is(false));
     }
+    
+    @Test
+    public void whenRegistryManyApplications()
+    {
+        DestinationDataProvider provider =  SharedDestinationDataProvider.getInstance();
+        SharedSapJcoRegistry.register(provider, "app1");
+        SharedSapJcoRegistry.register(provider, "app2");
+        SharedSapJcoRegistry.register(provider, "app3");
+        SharedSapJcoRegistry.register(provider, "app4");
+
+        assertThat(SharedSapJcoRegistry.hasRegister("app1"), is(true));
+        assertThat(SharedSapJcoRegistry.hasRegister("app2"), is(true));
+        assertThat(SharedSapJcoRegistry.hasRegister("app3"), is(true));
+        assertThat(SharedSapJcoRegistry.hasRegister("app4"), is(true));
+
+        SharedSapJcoRegistry.unregister(provider, "app4");
+        assertThat(SharedSapJcoRegistry.hasRegister("app4"), is(false));
+
+        SharedSapJcoRegistry.unregister(provider, "app3");
+        assertThat(SharedSapJcoRegistry.hasRegister("app3"), is(false));
+        
+        SharedSapJcoRegistry.unregister(provider, "app2");
+        assertThat(SharedSapJcoRegistry.hasRegister("app2"), is(false));
+        
+        SharedSapJcoRegistry.unregister(provider, "app1");
+        assertThat(SharedSapJcoRegistry.hasRegister("app1"), is(false));
+    }
+
 }

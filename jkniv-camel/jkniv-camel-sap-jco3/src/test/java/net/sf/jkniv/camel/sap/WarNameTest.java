@@ -25,27 +25,33 @@ import org.junit.Test;
 
 //import org.junit.Test;
 
-public class SapJcoComponentTest
+public class WarNameTest
 {
-
-    /*
-    @Test
-    public void testSsap() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(1);       
+    @Test 
+    public void whenDiscoverJarName() throws URISyntaxException
+    {
+        System.out.println(getWarName());
+    }
+    
+    private String getWarName()  throws URISyntaxException 
+    {
+        String path = getDirUri();
+        String[] pathSplitted = path.split("\\\\");
+        int i = 0;
+        for(; i<pathSplitted.length; i++)
+        {
+            if ("WEB-INF".equals(pathSplitted[i]))
+                    break;
+        }
+        if (i == pathSplitted.length)
+            return path;
         
-        assertMockEndpointsSatisfied();
+        return pathSplitted[i-1]; 
+    }
+    
+    private String getDirUri()  throws URISyntaxException {
+        return new File(WarNameTest.class.getProtectionDomain().getCodeSource().getLocation()
+                .toURI()).getPath();
     }
 
-    @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
-            public void configure() {
-                from("jkniv-jco://foo")
-                  .to("jkniv-jco://bar")
-                  .to("mock:result");
-            }
-        };
-    }
-    */
 }

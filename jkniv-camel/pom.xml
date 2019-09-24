@@ -12,7 +12,7 @@
 
   <description>Camel for SAP Java Connector standalone 3.0</description>
 
-  <url>http://jkniv.sf.net</url>
+  <url>http://jkniv.sourceforge.net/jkniv-camel-sap-jco3/index.html</url>
   <inceptionYear>2012</inceptionYear>
 
   <properties>
@@ -435,8 +435,8 @@
   </reporting>
 
   <organization>
-    <name>Jkniv</name>
-    <url>http://jkniv.sf.net/</url>
+    <name>jkniv, copyleft code</name>
+    <url>http://jkniv.SF.net/</url>
   </organization>
   <developers>
     <developer>
@@ -451,9 +451,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:https://svn.code.sf.net/p/jkniv/code/trunk/jkniv</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/jkniv/code/trunk/jkniv</developerConnection>
-    <url>http://sourceforge.net/p/jkniv/code/HEAD/tree/trunk//</url>
+    <connection>scm:git://github.com/alisson-gomesc/jkniv-camel</connection>
+    <url>https://github.com/alisson-gomesc/jkniv-camel.git</url>
+    <tag>HEAD</tag>
   </scm>
   <licenses>
     <license>

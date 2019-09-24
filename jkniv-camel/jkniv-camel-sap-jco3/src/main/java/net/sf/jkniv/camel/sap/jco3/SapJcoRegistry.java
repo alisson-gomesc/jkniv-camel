@@ -18,21 +18,62 @@
  */
 package net.sf.jkniv.camel.sap.jco3;
 
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sap.conn.jco.ext.DestinationDataProvider;
 
+/**
+ * 
+ * @author Alisson Gomes
+ * @since 2.20.0
+ */
 class SapJcoRegistry
 {
-    private static final Logger                  LOG        = LoggerFactory.getLogger(SapJcoComponent.class);
+    private static final Logger                  LOG;
+    /** a logical address of an ABAP system  */
+    private static final DestinationDataProvider MY_PROVIDER;
+    private static Invoke                        CHANGE_PROPERTIES;
+    private static Invoke                        REGISTER;
+    private static Invoke                        UNDO_REGISTER;
+    private static String                        APP_NAME;
+    static
+    {
+        LOG = LoggerFactory.getLogger(SapJcoRegistry.class);
+        MY_PROVIDER = SapDataProviderFactory.getInstance();
+        REGISTER = SapDataProviderFactory.getSharedRegister();
+        UNDO_REGISTER = SapDataProviderFactory.getSharedUnregister();
+        APP_NAME = WarName.getName();
+        CHANGE_PROPERTIES = new Invoke(MY_PROVIDER.getClass(), "changeProperties", new Class[]
+        { String.class, Properties.class });
+        
+    }
     
     /**
      * Register a {@code DestinationDataProvider}
-     * @param myProvider a logical address of an ABAP system 
-     * @param appName Name of application that is registered
      */
-    public static void register(final DestinationDataProvider myProvider, final String appName)
+    public static void register()
+    {
+        if (REGISTER != null)
+            sharedRegister();
+        else
+            localRegister();
+    }
+
+    /**
+     * Register a {@code DestinationDataProvider} using {@code jkniv-sap-provider} a shared register.
+     */
+    private static void sharedRegister()
+    {
+        REGISTER.invoke(new Object[]{MY_PROVIDER, APP_NAME});
+    }
+    
+    /**
+     * Register a {@code DestinationDataProvider} using {@code jkniv-camel-sap-jco3} component.
+     */
+    private static void localRegister()
     {
         //register the provider with the JCo environment;
         //catch IllegalStateException if an instance is already registered
@@ -40,8 +81,8 @@ class SapJcoRegistry
         {
             if (!com.sap.conn.jco.ext.Environment.isDestinationDataProviderRegistered())
             {
-                com.sap.conn.jco.ext.Environment.registerDestinationDataProvider(myProvider);
-                LOG.info("Destination Data Provider was register [{}] successfully.", myProvider);
+                com.sap.conn.jco.ext.Environment.registerDestinationDataProvider(MY_PROVIDER);
+                LOG.info("Destination Data Provider was register [{}] successfully.", MY_PROVIDER);
             }
             else
                 LOG.debug("Jco Destination global Environment data provider alright registered");
@@ -52,22 +93,37 @@ class SapJcoRegistry
             //stop the execution
             throw new Error(providerAlreadyRegisteredException);
         }
-        //set properties for the destination and ...
     }
-
     /**
-     * Register a {@code DestinationDataProvider}
-     * @param myProvider a logical address of an ABAP system 
-     * @param appName Name of application that is registered
+     * Undo register a {@code DestinationDataProvider}
      */
-    public static void undoRegister(final DestinationDataProvider myProvider, final String appName)
+    public static void unregister()
+    {
+        if (UNDO_REGISTER != null)
+            sharedUndoRegister();
+        else
+            localUndoRegister();
+    }
+    
+    /**
+     * Undo register a {@code DestinationDataProvider} using {@code jkniv-sap-provider} a shared component.
+     */
+    private static void sharedUndoRegister()
+    {
+        UNDO_REGISTER.invoke(new Object[]{MY_PROVIDER, APP_NAME});
+    }
+    
+    /**
+     * Undo register a {@code DestinationDataProvider}
+     */
+    public static void localUndoRegister()
     {
         try
         {
             if (com.sap.conn.jco.ext.Environment.isDestinationDataProviderRegistered())
             {
-                com.sap.conn.jco.ext.Environment.unregisterDestinationDataProvider(myProvider);
-                LOG.info("Destination Data Provider was unregistered [{}] successfully.", myProvider);
+                com.sap.conn.jco.ext.Environment.unregisterDestinationDataProvider(MY_PROVIDER);
+                LOG.info("Destination Data Provider was unregistered [{}] successfully.", MY_PROVIDER);
             }
         }
         catch (IllegalStateException providerAlreadyRegisteredException)
@@ -76,10 +132,22 @@ class SapJcoRegistry
             //somebody else registered its implementation, stop the execution
         }
     }
-
+    
     public static boolean hasRegister(String appName)
     {
         return true;
     }
-
+    
+    public static void setProperty(String destName, Properties props)
+    {
+        if (MY_PROVIDER instanceof SapJcoDestinationDataProvider)
+            ((SapJcoDestinationDataProvider) MY_PROVIDER).changeProperties(destName, props);
+        else if (MY_PROVIDER != null
+                && SapDataProviderFactory.SHARED_DATA_PROVIDER.equals(MY_PROVIDER.getClass().getName()))
+        {
+            CHANGE_PROPERTIES.invoke(MY_PROVIDER, new Object[]
+            { destName, props });
+        }
+    }
+    
 }

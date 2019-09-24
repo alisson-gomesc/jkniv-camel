@@ -2,6 +2,11 @@ package net.sf.jkniv.sap.env;
 
 import com.sap.conn.jco.ext.DestinationDataProvider;
 
+/**
+ * 
+ * @author Alisson Gomes
+ * @since 2.20.0
+ */
 public class StatusDestinationProvider
 {
     public enum Status {REGISTERED, UNREGISTERED}

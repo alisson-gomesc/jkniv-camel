@@ -18,8 +18,6 @@
  */
 package net.sf.jkniv.camel.sap.jco3;
 
-import java.lang.reflect.Method;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,33 +26,69 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
 public class SapDataProviderFactory
 {
     private static final Logger LOG = LoggerFactory.getLogger(SapDataProviderFactory.class);
-    public static final String SHARED_DATA_PROVIDER = "net.sf.jkniv.sap.env.SharedDestinationDataProvider";
+    public static final String  SHARED_DATA_PROVIDER   = "net.sf.jkniv.sap.env.SharedDestinationDataProvider";
+    public static final String  SHARED_SAPJCO_REGISTRY = "net.sf.jkniv.sap.env.SharedSapJcoRegistry";
     private static DestinationDataProvider sapDataProvider;
     
     public static DestinationDataProvider getInstance()
     {
         if (sapDataProvider == null)
         {
-            setInstance();
+            setInstanceOfDataProvider();
         }
         if (sapDataProvider == null)
             sapDataProvider = new SapJcoDestinationDataProvider();
-            
-        LOG.debug("DestinationDataProvider instanceof {}", (sapDataProvider != null ? sapDataProvider.getClass().getName() : "null"));
+        
+        LOG.debug("DestinationDataProvider instanceof {}",
+                (sapDataProvider != null ? sapDataProvider.getClass().getName() : "null"));
         return sapDataProvider;
     }
     
-    private static void setInstance()
+    private static void setInstanceOfDataProvider()
     {
         try
         {
-            Class clazz = Class.forName(SHARED_DATA_PROVIDER);
-            Method method = clazz.getDeclaredMethod("getInstance");
-            sapDataProvider = (DestinationDataProvider) method.invoke(null);
+            Invoke GET_INSTANCE = new Invoke(SHARED_DATA_PROVIDER, "getInstance", null);
+            sapDataProvider = (DestinationDataProvider) GET_INSTANCE.invoke(null);
         }
         catch (Exception e)
         {
-            LOG.warn(SHARED_DATA_PROVIDER+" doesn't in the classpath [{}]. Add jkniv-sap-provider.jar file as shared library.", e.getMessage());
+            LOG.warn(
+                    SHARED_DATA_PROVIDER
+                            + " doesn't in the classpath [{}]. Add jkniv-sap-provider.jar file as shared library.",
+                    e.getMessage());
         }
+    }
+    
+    public static Invoke getSharedRegister()
+    {
+        try
+        {
+            return  new Invoke(SHARED_SAPJCO_REGISTRY, "register", new Class[]{DestinationDataProvider.class, String.class});
+        }
+        catch (Exception e)
+        {
+            LOG.warn(
+                    SHARED_SAPJCO_REGISTRY
+                    + " doesn't in the classpath [{}]. Add jkniv-sap-provider.jar file as shared library.",
+                    e.getMessage());
+        }
+        return null;
+    }
+
+    public static Invoke getSharedUnregister()
+    {
+        try
+        {
+            return  new Invoke(SHARED_SAPJCO_REGISTRY, "unregister", new Class[]{DestinationDataProvider.class, String.class});
+        }
+        catch (Exception e)
+        {
+            LOG.warn(
+                    SHARED_SAPJCO_REGISTRY
+                    + " doesn't in the classpath [{}]. Add jkniv-sap-provider.jar file as shared library.",
+                    e.getMessage());
+        }
+        return null;
     }
 }

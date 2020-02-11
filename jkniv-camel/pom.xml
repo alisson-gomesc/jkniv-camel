@@ -23,7 +23,6 @@
   <modules>
     <module>jkniv-camel-sap-jco3</module>
     <module>jkniv-sap-provider</module>
-    
   </modules>
   <dependencies>
     <dependency>
@@ -436,7 +435,7 @@
 
   <organization>
     <name>jkniv, copyleft code</name>
-    <url>http://jkniv.SF.net/</url>
+    <url>http://jkniv.sf.net/</url>
   </organization>
   <developers>
     <developer>

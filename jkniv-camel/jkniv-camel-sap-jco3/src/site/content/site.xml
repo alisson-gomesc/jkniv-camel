@@ -35,7 +35,7 @@
     <menu name="jkniv camel SAP Jco" inherit="top">
       <item name="Introduction" href="index.html" />
       <item name="Example" href="example.html" />
-      <item name="Throubleshooting" href="throubleshooting.html" />
+      <item name="Troubleshooting" href="troubleshooting.html" />
       <item name="Logging" href="logging.html" />
       <item name="Release Notes" href="release-notes.html" />
       <item name="Javadoc" href="api-docs/index.html" />

@@ -181,9 +181,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:https://svn.code.sf.net/p/jkniv/code/trunk/jkniv</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/jkniv/code/trunk/jkniv</developerConnection>
-    <url>http://sourceforge.net/p/jkniv/code/HEAD/tree/trunk//</url>
+    <connection>scm:git://github.com/alisson-gomesc/jkniv-camel</connection>
+    <url>https://github.com/alisson-gomesc/jkniv-camel.git</url>
+    <tag>HEAD</tag>
   </scm>
   <licenses>
     <license>

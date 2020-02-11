@@ -1,3 +1,6 @@
-/.settings/
-/.project
-/target/
+**/target/
+**/.project
+**/.settings/
+**/.classpath
+**/*.class
+**/.sts4-cache

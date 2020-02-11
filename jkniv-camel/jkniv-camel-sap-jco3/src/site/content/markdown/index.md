@@ -12,13 +12,16 @@ Maven users will need to add the following dependency to their pom.xml for this 
     <dependency>
       <groupId>net.sf.jkniv</groupId>
       <artifactId>jkniv-camel-sap-jco3</artifactId>
-      <version>2.19.0</version>
+      <version>2.20.0</version>
     </dependency>
 
 
 #### NEWS
 
 Short release notes.
+
+##### version 2.20.0 released
+  Supports for start/stop multiple instances over web container, troubleshooting  <i><a href="troubleshooting.html">Unresolved case</a></i> of `JCoException: (106) JCO_ERROR_RESOURCE`. 
 
 ##### version 2.19.0 released
  Release that supports JCoStructure as PARAMETERS INPUT.

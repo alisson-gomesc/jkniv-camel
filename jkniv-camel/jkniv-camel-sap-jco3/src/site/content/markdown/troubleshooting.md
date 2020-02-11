@@ -1,6 +1,6 @@
-Title: Throubleshooting
+Title: troubleshooting JCoException
 
-Throubleshooting
+Troubleshooting
 -------------
        
       

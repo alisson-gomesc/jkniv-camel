@@ -21,8 +21,6 @@ package net.sf.jkniv.camel.sap.jco3;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import org.mockito.internal.stubbing.answers.Returns;
-
 /**
  * 
  * @author Alisson Gomes

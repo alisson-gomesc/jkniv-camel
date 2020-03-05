@@ -12,7 +12,7 @@ Maven users will need to add the following dependency to their pom.xml for this 
     <dependency>
       <groupId>net.sf.jkniv</groupId>
       <artifactId>jkniv-camel-sap-jco3</artifactId>
-      <version>2.20.0</version>
+      <version>${current-version}</version>
     </dependency>
 
 

@@ -3,7 +3,7 @@ Title: Release Notes
 Release Notes
 -------------
 
-Welcome to the 2.18.0.RC1 release that supports several web applications using `jkniv-jco` in the same web container. 
+Welcome to the `2.18.0.RC1` release that supports several web applications using `jkniv-jco` in the same web container. 
    
        
 #### jkniv-camel-sap-jco3-2.18.0.RC1
